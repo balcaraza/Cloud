@@ -1,9 +1,9 @@
-#Crea tu propia nube  con VPN
-##Introducción
+# Crea tu propia nube  con VPN
+## Introducción
 Este proyecto tiene como objetivo configurar un servidor NAS (Network Attached Storage) utilizando Nextcloud y una VPN (Virtual Private Network) con Tailscale en una Raspberry Pi. Nextcloud te permitirá crear tu propia nube privada para almacenar y compartir archivos de manera segura, mientras que Tailscale proporcionará una conexión VPN sencilla y segura para acceder a tu NAS desde cualquier lugar.
 
-##Requisitos
-###Hardware:
+## Requisitos
+### Hardware:
 * Raspberry Pi (preferiblemente modelo 4)
 * Tarjeta microSD (mínimo 16GB)
 * Fuente de alimentación compatible
@@ -14,19 +14,19 @@ Este proyecto tiene como objetivo configurar un servidor NAS (Network Attached S
 * Raspberry Pi OS Lite
 * Nextcloud
 * Tailscale
-##Características
-###Nextcloud:
+## Características
+### Nextcloud:
 * Almacenamiento y sincronización de archivos
 * Compartición de archivos y carpetas
 * Aplicaciones adicionales para mejorar la funcionalidad (calendario, contactos, etc.)
-###Tailscale:
+### Tailscale:
 * Configuración sencilla de VPN
 * Conexión segura y cifrada
 * Acceso remoto a tu NAS desde cualquier dispositivo
 
-##Pasos Generales
+## Pasos Generales
 1. Preparación de la Raspberry Pi:
-###Instalación de Raspberry Pi OS
+### Instalación de Raspberry Pi OS
 1. 1.  Configuración inicial del sistema
 descargar e intalar el software oficial de raspberry para cargar el sistema operativo en la micro sd https://www.raspberrypi.com/software/
 NOTA cerrar cualquier aviso de windows durante la instalacion del software..
@@ -34,8 +34,8 @@ al finalizar conectar el teclado, monitor y mouse a la raspberry y encender.
 
 1. 2. obtener la ip de la rapberry
 
-metodo 1 ingresar las credenciales creadas durante la configuracion del sistema operativo e ingresar el siguiente comando -ifconfig-
-metodo 2 acceder a tu router (tienes que conocer la dirección IP de tu router o de la administracion de tu red mesh)
+METODO 1 ingresar las credenciales creadas durante la configuracion del sistema operativo e ingresar el siguiente comando -ifconfig-
+METODO 2 2 acceder a tu router (tienes que conocer la dirección IP de tu router o de la administracion de tu red mesh)
 ingresar con tus credenciales y localizar el dispositvo. tambien puedes utilizar una aplicacion en tu celular que te permita ver los dispositivos conectados a tu red.
 abrir terminal cmd en windows
 colocar el comando
@@ -99,41 +99,59 @@ NOTA: En este punto la conexion ssh se perdera por lo que deberas realizarla de 
 * verificar la ip fija
 se realiza con el comando ifconfig y tiene que tener la que configuraste.
 
-##2 Instalacion de paquetes:
+## 2 Instalacion de paquetes:
 a continuacion isntalaremos Apache poder utilizar un servidor web y que pueda funcionar Nextcloud el servicio de nube y PHP para una correcta ejecucion de la interfaz frontend con este comando, asegurate de copiarlo completo, puede demorar unos minutos.
 
 sudo apt install apache2 libapache2-mod-php mariadb-server php-gd php-json php-mysql php-curl php-mbstring php-intl php-imagick php-xml php-zip
 
-##3 Configuración de Nextcloud:
+## 3 Configuración de Nextcloud:
 3. 1. configuracion de la base de datos y usuarios para nextcloud
 Ingresar el siguiente comando:
 sudo mysql -u root
 una vez dentro de mariadb ingresar la siguiente lista de comandos:
+
 CREATE DATABASE nextcloud;
+
 en los siguientes comandos remplaza usuario y contraseña por los que tu quieras usar:
+
 CREATE USER 'usuario'@'localhost' IDENTIFIED BY 'contraseña';
+
 dar privilegios al usuario sobre la base de datos
+
 GRANT ALL PRIVILEGES ON nombre_base_de_datos.* TO 'usuario'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
+
 3. 2. Descarga de nextcloud
 se descargara nextcloud en la carpeta temporal (tmp) del sitema para descomprimir los archivos necesarios y que al reiniciar la raspberry se eliminen y no usen espacio en la microSD
 ir a la carpeta tmp con:
+
 cd /tmp/
+
 comando:
+
 wget https://download.nextcloud.com/server/releases/latest.zip
 unzip latest.zip
+
 con el comando ls debera aparecer una carpeta llamada nextcloud la cual moveremos al directorio publico del servidor apache y que pueda ser hospedada.
+
 sudo mv nextcloud/ /var/www/html/
+
 entrar al directorio
+
 cd /var/www/html/
+
 cambiar el propietario de la carpeta nextcloud al usuario del servidor apache
+
 sudo chown -R www-data:www-data nextcloud
 
 4. configuracion del servidor apache 
 crea el fichero de configuracion para el sitio web de nextcloud
+
 sudo nano /etc/apache2/sites-available/nextcloud.conf
+
 copiar las siguientes lineas de la configuracion del sitio:
+
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
     DocumentRoot /var/www/html/nextcloud/
@@ -159,17 +177,23 @@ copiar las siguientes lineas de la configuracion del sitio:
 para salir de nano presionar ctrl + O
 ctrl+x
 habilitar el sitio de nextcloud y los modulos de apache requeridos:
+
 sudo a2ensite nextcloud.conf
 sudo a2enmod rewrite headers env dir mime setenvif ssl
+
 reiniciar apache
 sudo systemctl restart apache2
 
 cambiar el directorio data de ubicacion publica a privada var
+
 cd /var
 crear directorio data
+
 sudo mkdir data
 ls -l data/
+
 cambiar el propietario de Root al usuario de nextcloud
+
 sudo chown www-data:www-data data/
 
 ## 5 ingresar a nextcloud desde el navegador en windows
