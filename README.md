@@ -317,6 +317,14 @@ reiniciar la raspberry, esperar dos minutos y recargar nextcloud en el navegador
 
 Configuración de Tailscale:
 Instalación y configuración de Tailscale
+ingresar el siguiente comando:
+```
+curl -fsSL https://tailscale.com/install.sh | sh
+```
+Seguido de:
+```
+sudo tailscale up
+```
 Conexión de dispositivos a la VPN
 Pruebas y Verificación:
 Verificación del acceso a Nextcloud
